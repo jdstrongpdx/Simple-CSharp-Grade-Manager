@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;  // Needed for List<T>
+
 class Program
 {
     static void Main(string[] args)
@@ -24,19 +24,20 @@ class Program
                 {
                     case 1:
                         // ADD A NEW STUDENT
-                        Console.Write("Enter student name: ");
-                        string studentName = Console.ReadLine();
-                        
-                        // Ensure task is not empty
-                        if (!string.IsNullOrWhiteSpace(studentName))
+                        Console.Write("Enter a Student Name: ");
+                        string studentName;
+                        while (true)
                         {
-                            Student newStudent = new Student(studentName);
-                            studentList.Add(newStudent); 
-                        }
-                        else
-                        {
+                            studentName = Console.ReadLine() ?? "";
+                            // Ensure subject is not empty
+                            if (!string.IsNullOrWhiteSpace(studentName))
+                            {
+                                break; // Valid student entered
+                            }
                             Console.WriteLine("Student name cannot be empty.");
                         }
+                        Student newStudent = new Student(studentName);
+                        studentList.Add(newStudent);
                         break;
 
                     case 2:
@@ -47,13 +48,11 @@ class Program
                             Console.WriteLine("No Students Exist");
                             break;
                         }
-
-
                         // 1. List student IDs and names
                                 Console.WriteLine("Available Students:");
                                 foreach (Student student in studentList)
                                 {
-                                    Console.WriteLine($"{student.studentId}. {student.studentName}");
+                                    Console.WriteLine($"{student.StudentId}. {student.StudentName}");
                                 }
 
                                 // 2. Get valid student ID
@@ -61,7 +60,7 @@ class Program
                                 while (true)
                                 {
                                     Console.Write("Enter the ID of the student to add a grade to: ");
-                                    if (int.TryParse(Console.ReadLine(), out studentId) && studentList.Any(s => s.studentId == studentId))
+                                    if (int.TryParse(Console.ReadLine(), out studentId) && studentList.Any(s => s.StudentId == studentId))
                                     {
                                         break; // Valid ID entered
                                     }
@@ -74,16 +73,13 @@ class Program
                                 string subjectName;
                                 while (true)
                                 {
-                                    subjectName = Console.ReadLine();
-                                    
-                                    // Ensure task is not empty
+                                    subjectName = Console.ReadLine() ?? "";
+                                    // Ensure subject is not empty
                                     if (!string.IsNullOrWhiteSpace(subjectName))
                                     {
-                                        break; // Valid grade entered
+                                        break; // Valid subject entered
                                     }
-
                                     Console.WriteLine("Subject name cannot be empty.");
-
                                 }
 
                                 // 4. Get valid grade (0-100)
@@ -100,10 +96,10 @@ class Program
                                 }
 
                                 // 5. Add grade to student's grade list
-                                Student selectedStudent = studentList.First(s => s.studentId == studentId);
-                                selectedStudent.studentGrades.Add(new Grade(gradeScore, subjectName));
+                                Student selectedStudent = studentList.First(s => s.StudentId == studentId);
+                                selectedStudent.StudentGrades.Add(new Grade(gradeScore, subjectName));
 
-                                Console.WriteLine($"Grade added successfully for {selectedStudent.studentName}"); Console.WriteLine("");
+                                Console.WriteLine($"Grade added successfully for {selectedStudent.StudentName}"); Console.WriteLine("");
                         break;
 
                     case 3:
@@ -117,11 +113,11 @@ class Program
                             foreach (Student student in studentList)
                             {
                                 // ternary grade evaluation
-                                double averageGrade = student.studentGrades.Count > 0 ? 
-                                    student.studentGrades.Average(g => g.gradeScore) 
+                                double averageGrade = student.StudentGrades.Count > 0 ? 
+                                    student.StudentGrades.Average(g => g.GradeScore) 
                                     : 0;
                                 string gradeText = averageGrade == 0 ? "No Grades Entered" : "Average Grade: " + averageGrade.ToString("F0") + "%";
-                                Console.WriteLine($"ID: {student.studentId} -- Student Name: {student.studentName} -- {gradeText}");
+                                Console.WriteLine($"ID: {student.StudentId} -- Student Name: {student.StudentName} -- {gradeText}");
                             }
                         }
                         break;
@@ -137,17 +133,17 @@ class Program
                             foreach (Student student in studentList)
                             {
                                 // write student name
-                                Console.WriteLine($"ID: {student.studentId} -- Student Name:{student.studentName}");
-                                if (student.studentGrades.Count == 0)
+                                Console.WriteLine($"ID: {student.StudentId} -- Student Name: {student.StudentName}");
+                                if (student.StudentGrades.Count == 0)
                                 {
                                     Console.WriteLine($"     No Grades Entered");
                                 }
                                 else
                                 {
                                     // write all student subjects and grades
-                                    foreach (Grade grade in student.studentGrades)
+                                    foreach (Grade grade in student.StudentGrades)
                                     {
-                                        Console.WriteLine($"     Subject: {grade.gradeSubject} -- Grade: {grade.gradeScore}%");
+                                        Console.WriteLine($"     Subject: {grade.GradeSubject} -- Grade: {grade.GradeScore}%");
                                     }
                                 }
                             }
@@ -170,29 +166,17 @@ class Program
        }
     }
 
-    class Student
+    class Student(string studentName)
     {
         private static int idCounter = 1;
-        public int studentId { get; private set;}
-        public string studentName { get; private set;}
-        public List<Grade> studentGrades { get; private set;}
-
-        public Student(string studentName)
-        {
-            this.studentId = idCounter++;
-            this.studentName = studentName;
-            this.studentGrades = new List<Grade>();
-        }
+        public int StudentId { get; private set; } = idCounter++;
+        public string StudentName { get; private set; } = studentName;
+        public List<Grade> StudentGrades { get; private set; } = new List<Grade>();
     }
 
-    class Grade {
-        public int gradeScore { get; private set;}
-        public string gradeSubject { get; private set;}
-
-        public Grade(int gradeScore, string gradeSubject)
-        {
-            this.gradeScore = gradeScore;
-            this.gradeSubject = gradeSubject;
-        }
+    class Grade(int gradeScore, string gradeSubject)
+    {
+        public int GradeScore { get; private set; } = gradeScore;
+        public string GradeSubject { get; private set; } = gradeSubject;
     }
 }
